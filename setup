@@ -132,7 +132,182 @@ install_global() {
 }
 
 # ============================================================
-# Step 3: Setup project
+# Step 3: Project interview — generate .prism/ from answers
+# ============================================================
+
+interview_project() {
+    local P="$1"
+    local TODAY
+    TODAY=$(date +%Y-%m-%d)
+
+    log_step "Quick project interview (30 seconds — or Enter to skip each)"
+
+    # Q1: Project name
+    echo -ne "  ${BOLD}Project name${NC} [$(basename "$P")]: "
+    read -r PROJECT_NAME
+    PROJECT_NAME="${PROJECT_NAME:-$(basename "$P")}"
+
+    # Q2: Description
+    echo -ne "  ${BOLD}What does it do?${NC} (1 sentence): "
+    read -r PROJECT_DESC
+    PROJECT_DESC="${PROJECT_DESC:-[Describe your project here]}"
+
+    # Q3: Audience
+    echo -ne "  ${BOLD}Who uses it?${NC} (e.g. internal team, end users, developers): "
+    read -r PROJECT_AUDIENCE
+    PROJECT_AUDIENCE="${PROJECT_AUDIENCE:-[Define your target users]}"
+
+    # Q4: Tech stack
+    echo -ne "  ${BOLD}Tech stack?${NC} (e.g. Python/FastAPI, React/Next.js): "
+    read -r TECH_STACK
+    TECH_STACK="${TECH_STACK:-[Define your tech stack]}"
+
+    # Q5: Domain terms
+    echo -ne "  ${BOLD}Domain-specific terms?${NC} (term1:definition, term2:definition — or skip): "
+    read -r DOMAIN_TERMS
+
+    # Generate CONTEXT_HUB.md
+    cat > "$P/.prism/CONTEXT_HUB.md" << CONTEXT_EOF
+# CONTEXT HUB — Shared Project Context
+
+> Single Source of Truth for all agents.
+> Master-Agent updates. Sub-agents read only.
+
+## WHY — Why this project exists
+
+${PROJECT_DESC}
+
+## WHO — Who receives the output
+
+- **Primary**: ${PROJECT_AUDIENCE}
+- **Secondary**: [Add as needed]
+
+## STANDARDS — Output standards
+
+### Code Standards
+- Language: ${TECH_STACK}
+- Style: [Define your coding conventions]
+- Testing: [Define your testing approach]
+- Naming: [Define naming conventions]
+
+### Document Standards
+- Format: GitHub-flavored Markdown
+- All docs must match actual code/behavior (no stale docs)
+
+### Quality Gates
+- [Define your quality criteria]
+
+## TECH STACK
+
+- **Core**: ${TECH_STACK}
+- [Add frameworks, tools, services as needed]
+
+## KEY CONSTRAINTS
+
+- [Add project constraints, deadlines, limitations]
+
+---
+*Last updated: ${TODAY}*
+*Updated by: Master-Agent*
+CONTEXT_EOF
+
+    # Generate MASTER_PLAN.md
+    cat > "$P/.prism/MASTER_PLAN.md" << PLAN_EOF
+# MASTER PLAN
+
+> Managed by Master-Agent. Reviewed by Human.
+> Updated after each task completion.
+
+## Current Sprint
+
+**Sprint**: #1 — Project Setup
+**Goal**: ${PROJECT_NAME} — Initial setup and first deliverable
+**Status**: 🔄 In progress
+
+## Task Board
+
+| ID | Task | Model Tier | Status | Deps | Notes |
+|----|------|-----------|--------|------|-------|
+| | | | | | |
+
+### Status Legend
+- ⏳ Not started
+- 🔄 In progress
+- ✅ Done
+- ❌ Blocked
+- 🔁 Needs revision
+
+## Completed Tasks Log
+
+| ID | Completed | Summary | Files Changed |
+|----|-----------|---------|---------------|
+
+## Blockers & Issues
+
+| Issue | Severity | Owner | Status |
+|-------|----------|-------|--------|
+
+---
+*Last updated: ${TODAY}*
+PLAN_EOF
+
+    # Generate DICTIONARY.md with domain terms
+    cat > "$P/.prism/DICTIONARY.md" << 'DICT_EOF'
+# PROJECT DICTIONARY
+
+> Defines project-specific terminology.
+> Purpose: AI never guesses meaning.
+> Updated by: Master-Agent + Human
+
+## PRISM Terms
+
+| Term | Definition | Context |
+|------|-----------|---------|
+| `PRISM` | Plan → Review → Implement → Ship → Monitor | Core playbook lifecycle |
+| `Master-Agent` | The orchestrator that plans, decomposes, delegates, reviews | Opus-tier, runs in main session |
+| `Sub-Agent` | Focused executor that reads a task brief and delivers | Sonnet-tier, runs in separate session |
+| `GSD` | Get Shit Done — do it yourself if task < 15 min | Quick strike mode, no sub-agent needed |
+| `DoD` | Definition of Done — specific, verifiable completion criteria | Every task must have one |
+| `Context Compacting` | Extracting essential state into STAGING.md for session handoff | When conversation gets too long |
+
+## Project Terms
+
+| Term | Definition | Context |
+|------|-----------|---------|
+DICT_EOF
+
+    if [ -n "$DOMAIN_TERMS" ]; then
+        IFS=',' read -ra TERMS <<< "$DOMAIN_TERMS"
+        for entry in "${TERMS[@]}"; do
+            entry=$(echo "$entry" | sed 's/^ *//;s/ *$//')
+            local term="${entry%%:*}"
+            local def="${entry#*:}"
+            term=$(echo "$term" | sed 's/^ *//;s/ *$//')
+            def=$(echo "$def" | sed 's/^ *//;s/ *$//')
+            if [ -n "$term" ] && [ -n "$def" ]; then
+                echo "| \`${term}\` | ${def} | Project-specific |" >> "$P/.prism/DICTIONARY.md"
+            fi
+        done
+    else
+        echo "| | [Add terms as they arise] | |" >> "$P/.prism/DICTIONARY.md"
+    fi
+
+    cat >> "$P/.prism/DICTIONARY.md" << 'DICT_FOOTER'
+
+---
+*Append new terms as they arise. Never rewrite entire file.*
+DICT_FOOTER
+
+    # Copy knowledge templates
+    cp "$FRAMEWORK_DIR/.prism-template/knowledge/RULES.md" "$P/.prism/knowledge/RULES.md"
+    cp "$FRAMEWORK_DIR/.prism-template/knowledge/GOTCHAS.md" "$P/.prism/knowledge/GOTCHAS.md"
+    cp "$FRAMEWORK_DIR/.prism-template/knowledge/TECH_DECISIONS.md" "$P/.prism/knowledge/TECH_DECISIONS.md"
+
+    log_ok ".prism/ generated for \"${PROJECT_NAME}\""
+}
+
+# ============================================================
+# Step 4: Setup project
 # ============================================================
 
 setup_project() {
@@ -151,14 +326,20 @@ setup_project() {
         fi
     done
 
-    # .prism/
-    if [ ! -d "$P/.prism" ]; then
-        cp -r "$FRAMEWORK_DIR/.prism" "$P/.prism"
-    fi
+    # .prism/ — create structure
+    local prism_existed=false
+    [ -d "$P/.prism" ] && prism_existed=true
     for d in tasks adhoc templates knowledge context designs qa-reports retros brainstorms; do
         mkdir -p "$P/.prism/$d"
     done
     log_ok ".prism/ structure"
+
+    # Interview to generate .prism/ content (only for new projects)
+    if [ "$prism_existed" = false ]; then
+        interview_project "$P"
+    else
+        log_info ".prism/ content exists — skipped interview"
+    fi
 
     # .claude/settings.json + commands
     mkdir -p "$P/.claude/commands"
