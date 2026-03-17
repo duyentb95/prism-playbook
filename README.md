@@ -1,257 +1,227 @@
-# PRISM — AI Agent Orchestration Framework
+# PRISM — AI Team Playbook
 
 > **P**lan → **R**eview → **I**mplement → **S**hip → **M**onitor
 >
-> Turn Claude Code from an "AI coder" into a professional "AI Team Manager".
-> Optimize tokens, output quality, and developer experience.
+> Make Claude Code 2-3x more productive. Stop guessing, start structuring.
 >
-> *Biến Claude Code từ "AI coder" thành "AI Team Manager" chuyên nghiệp.*
-> *Tối ưu token, output quality, và developer experience.*
+> *Giúp Claude Code productive gấp 2-3x. Ngừng đoán, bắt đầu có cấu trúc.*
 
 ---
 
-## Installation / Cài đặt
+## What is PRISM?
+
+A set of conventions, templates, and pre-built skills that make Claude Code work like a professional AI team — not just a chatbot that writes code.
+
+**Not a library. Not a platform. A playbook.** Install it, use it, forget it's there.
+
+```
+WITHOUT PRISM:
+  You → "Build me an API" → Claude writes 500 lines → wrong → fix → fix → lost context
+
+WITH PRISM:
+  You → "Build me an API" → Claude asks WHY → designs → you approve → executes correctly
+  Knowledge saved → next session picks up where you left off
+```
+
+---
+
+## Install (2 minutes)
 
 ```bash
-# Clone framework (gstack included as submodule)
-git clone --recursive https://github.com/duyentb95/prism-framework.git
-cd prism-framework
-
-# Install everything
+git clone --recursive https://github.com/duyentb95/prism-playbook.git
+cd prism-playbook
 ./setup
 ```
 
-**What `./setup` does / `./setup` tự động:**
+Done. Open any project with `claude` — PRISM skills are available globally.
 
-1. Check prerequisites (Git, Claude Code, Bun)
-2. Init `vendor/gstack` (clone if missing)
-3. Install PRISM skills → `~/.claude/skills/`
-4. Install gstack → `~/.claude/skills/gstack/` (build browse binary + symlinks)
-5. Show Superpowers install command
-6. Setup project files (CLAUDE.md, .prism/, .claude/)
-
-**Add framework to another project / Thêm vào dự án khác:**
+**Add to an existing project:**
 ```bash
-./setup --project ~/projects/my-other-app
+./setup --project ~/my-project
 ```
 
-**Update gstack to latest / Cập nhật gstack:**
-```bash
-./setup --update
-```
+This copies `CLAUDE.md` + `.prism/` into your project. Commit them to git — teammates get the context automatically.
 
 ---
 
-## Quick Start
+## Use It
 
 ```bash
-cd /path/to/your/project
+cd ~/my-project
 claude
 
-# Step 1: Initialize / Khởi tạo
-> /init-prism
+# Describe what you need — Claude asks first, then plans, then executes
+> I need a REST API with auth and CRUD for a todo app
 
-# Step 2: Brainstorm (if idea is unclear / nếu ý tưởng chưa rõ)
-> /brainstorm [rough idea]
-# → Claude asks clarifying questions → refines → presents design
-
-# Step 3: Plan (once you know what you need / sau khi biết rõ cần gì)
-> /plan [task description]
-# → Design sections → micro-tasks → model tiers → cost estimate
-# → Review plan → type GO
-
-# Step 4: Execute (sub-agents run in parallel / chạy song song)
-# Open a new terminal for each task:
-> claude
-> "Read .prism/tasks/TASK_001_xxx.md and EXECUTE. Assume I am AFK."
-
-# Step 5: Review (sub-agent reports: DONE / BLOCKED / CONCERNS)
-# Return to master session:
-> /review TASK_001
+# Or use specific commands:
+> /plan Build user authentication with JWT
+> /paranoid-review
+> /ship-it
+> /qa-check
 ```
 
----
+### Core Commands
 
-## Why This Framework? / Tại sao cần Framework này?
-
-| Problem / Vấn đề | Solution / Giải pháp |
-|---|---|
-| Claude "forgets" context in long chats | Context Compacting → STAGING.md → fresh session |
-| Inconsistent output quality | CONTEXT_HUB + templates + RULES.md |
-| Wasted tokens on unnecessary context | Isolated sub-agent sessions + .claudecodeignore |
-| No visibility into "what AI is thinking" | Zero-Assumption Rule + transparent reporting |
-| Knowledge lost between sessions | Knowledge Spine → git-committed wisdom |
-| Ad-hoc tasks derail the main sprint | Isolated adhoc/ folder |
-
----
-
-## Project Structure / Cấu trúc dự án
-
-```
-prism-framework/
-├── setup                  # ← Run this / Chạy cái này
-├── CLAUDE.md              # Master-Agent brain (copied to each project)
-├── GETTING-STARTED.md     # Beginner's guide / Hướng dẫn cho người mới
-├── .prism/                # Template .prism/ (copied to each project)
-├── .claude/               # Settings template
-├── skills/                # PRISM skills (installed globally)
-│   ├── master-agent/
-│   ├── sub-agent/
-│   ├── context-compactor/
-│   ├── knowledge-spine/
-│   └── gstack-bridge/    # Router: PRISM ↔ gstack (lazy-load)
-├── commands/              # Slash commands
-├── vendor/                # Third-party skills
-│   └── gstack/            # ← Garry Tan's cognitive modes (git submodule)
-├── docs/                  # Additional documentation
-├── .gitmodules            # gstack submodule config
-└── .gitignore
-```
-
-**Per-project structure after setup / Cấu trúc dự án sau khi setup:**
-
-```
-your-project/
-├── CLAUDE.md                    # Brain — Master-Agent instructions
-├── .claudecodeignore            # Don't scan these folders
-├── .claude/settings.json        # Agent Teams enabled
-├── .prism/
-│   ├── CONTEXT_HUB.md          # WHY, WHO, STANDARDS (shared context)
-│   ├── MASTER_PLAN.md          # Task board + sprint status
-│   ├── DICTIONARY.md           # Project terminology
-│   ├── STAGING.md              # Session snapshot (for context reset)
-│   ├── tasks/                  # Sub-agent task briefs
-│   ├── adhoc/                  # Out-of-sprint requests
-│   ├── templates/              # Sample outputs for reverse-engineering
-│   ├── knowledge/              # Accumulated project wisdom
-│   │   ├── RULES.md            #   Extracted patterns & rules
-│   │   ├── GOTCHAS.md          #   Traps & lessons learned
-│   │   └── TECH_DECISIONS.md   #   Architecture Decision Records
-│   └── context/                # Minimal context extracts per task
-└── [your project files...]
-```
-
----
-
-## How It Works / Cách hoạt động
-
-```
-You provide context (files, notes, screenshots, WHY)
-    │
-    ▼
-Master-Agent (Opus) — Plan Mode
-    │ Read context → Analyze → Propose plan
-    │ ← You review + approve (CONFIRMED)
-    │
-    ├── GSD Mode (<15min) ──── Master does it directly
-    │
-    ├── Wave 1 (parallel)
-    │   ├── Sub-Agent A (Sonnet) ──── TASK_001 ──── Handover ─┐
-    │   └── Sub-Agent B (Opus)   ──── TASK_002 ──── Handover ─┤
-    │                                                          │
-    │   Master-Agent reviews ◀─────────────────────────────────┘
-    │   ├── PASS → Mark done, extract knowledge
-    │   └── FAIL → Update task, re-run sub-agent
-    │
-    ├── Wave 2 (depends on Wave 1)
-    │   └── Sub-Agent C (Sonnet) ──── TASK_003
-    │
-    ▼
-Master-Agent — Wrap up
-    │ Update MASTER_PLAN, knowledge, docs
-    │ Context Compacting if session is long
-    ▼
-Done (or next sprint)
-```
-
----
-
-## Cognitive Modes (from gstack — Garry Tan / YC)
-
-> "Planning is not review. Review is not shipping. Founder taste is not engineering rigor.
-> If you blur all of that together, you get a mediocre blend of all four."
-
-| Mode | Brain | When to use / Khi nào dùng |
-|------|-------|---|
-| CEO / Founder | Taste, ambition, user empathy | "Am I building the right thing?" |
-| Eng Manager | Architecture, rigor, diagrams | Lock technical design, edge cases, test matrix |
-| Paranoid Reviewer | Security, bugs, production thinking | "What will break in production?" |
-| Release Engineer | Execution, no talking | Branch ready → ship it. No more brainstorming. |
-| Technical Writer | Docs, clarity, reader empathy | Update README, ARCHITECTURE, API docs |
-| QA Engineer | Testing, verification, evidence | Verify output, screenshot, reproduce |
-| Retro Analyst | Metrics, reflection, trends | What worked this sprint, what to improve |
-
----
-
-## Commands / Lệnh
-
-### PRISM commands (inline, zero extra tokens)
-
-| Command | When to use / Khi nào dùng | Time |
-|---------|---|---|
-| `/init-prism` | First-time setup for a project / Lần đầu setup | Once |
-| `/brainstorm [idea]` | Explore a vague idea / Ý tưởng mơ hồ | 5-10 min |
-| `/ceo-review [feature]` | "Am I building the right thing?" | 5-10 min |
-| `/eng-review [feature]` | Lock architecture, diagrams, edge cases | 5-10 min |
-| `/plan [task]` | Break into micro-tasks, assign model tiers | 3-5 min |
-| `GO` | Approve plan, start execution | 0 min |
-| `/gsd [small task]` | Small task, do it now / Việc nhỏ, làm ngay | 1-5 min |
-| `/paranoid-review` | Find bugs before production does | 3-5 min |
-| `/ship-it` | Ship. No more talking. | 1-2 min |
-| `/document-release` | Update docs to match shipped code | 5-10 min |
+| Command | What it does | Time |
+|---------|-------------|------|
+| `/plan [task]` | Break into micro-tasks, design first | 3-5 min |
+| `GO` | Approve plan, start execution | — |
+| `/gsd [small task]` | Just do it, no planning | 1-5 min |
+| `/paranoid-review` | Find production bugs before they find you | 3-5 min |
+| `/ship-it` | Sync, test, commit, push, PR | 1-2 min |
 | `/qa-check` | Verify output with evidence | 3-5 min |
-| `/retro` | Sprint retrospective | 5-10 min |
-| `/compact` | Session too long, Claude is forgetting | 1 min |
+| `/retro` | What went well, what to improve | 5-10 min |
+| `/compact` | Session too long? Save state, start fresh | 1 min |
 
-### gstack commands (lazy-loaded, deeper analysis)
+### When You Want Deeper Analysis (via gstack)
 
-| Command | Mode | When to choose over PRISM |
-|---------|------|---|
-| `/plan-ceo-review` | Founder/CEO | Deep product thinking needed |
-| `/plan-eng-review` | Eng manager | Need thorough architecture lock |
-| `/review` | Staff engineer | Pre-merge code review with auto-fix |
-| `/ship` | Release engineer | Version bump + PR automation |
-| `/browse [url]` | QA engineer | Headless browser ~100ms |
-| `/qa` | QA lead | Diff-aware 3-tier testing |
-| `/retro --gstack` | Eng manager | Commit analysis + per-person |
-
----
-
-## Pro Tips / Mẹo chuyên nghiệp
-
-1. **Always provide WHY** — "I need this dashboard to convince the CEO to invest more in DeFi" > "Build a dashboard"
-2. **Sample outputs are powerful** — Put screenshots/HTML into `.prism/templates/` → Claude reverse-engineers the pattern
-3. **Git is the Single Source of Truth** — Commit `.prism/` → teammate `git pull` → their AI has all the "memory"
-4. **Review the plan before GO** — 2 minutes reviewing saves 30 minutes fixing mistakes
-5. **`/compact` when sessions get long** — Keeps Claude sharp and focused
-6. **Append, don't rewrite** — Knowledge files grow incrementally (saves tokens)
+| Command | Mode |
+|---------|------|
+| `/plan-ceo-review` | "Am I building the right thing?" |
+| `/plan-eng-review` | Architecture, diagrams, edge cases |
+| `/review` | Pre-merge code review with auto-fix |
+| `/ship` | Full ship automation (version bump, PR) |
+| `/qa` | Diff-aware browser testing |
+| `/browse [url]` | Headless browser (~100ms) |
 
 ---
 
-## Requirements / Yêu cầu
+## What You Get
 
-| Required | How to check | Install |
-|----------|---|---|
-| **Claude Code CLI** | `claude --version` | `npm install -g @anthropic-ai/claude-code` |
-| **Claude account** | Can login to Claude Code | Sign up at claude.ai (Pro $20/mo or Max) |
-| **Git** | `git --version` | [git-scm.com](https://git-scm.com) |
+### 1. CLAUDE.md — Project Instructions for Claude
 
-| Recommended | Why |
-|---|---|
-| **Bun** | Required for gstack `/browse` browser automation |
-| **tmux** | View multiple agent terminals side-by-side |
-| **Claude Max plan** | Agent teams consume many tokens |
+Tells Claude how to think about your project. Copied into your project root.
+
+Pick a template that fits:
+- **[Web App](templates/claude-web-app.md)** — Next.js, React, Vue, Svelte
+- **[API Backend](templates/claude-api-backend.md)** — Python, Node, Go, Rust
+- **[Data Pipeline](templates/claude-data-pipeline.md)** — ETL, analytics, notebooks
+- **[Non-Code](templates/claude-non-code.md)** — Reports, strategy, documentation
+- **[Minimal](templates/claude-minimal.md)** — Smallest useful starting point
+
+### 2. .prism/ — Shared Knowledge
+
+A folder in your project that grows smarter over time:
+
+```
+.prism/
+├── CONTEXT_HUB.md       # WHY this project exists, WHO it's for, STANDARDS
+├── MASTER_PLAN.md       # Task board — what's done, what's next
+├── DICTIONARY.md        # Project terminology — Claude never guesses meaning
+├── knowledge/
+│   ├── RULES.md         # Patterns discovered ("always do X when Y")
+│   ├── GOTCHAS.md       # Traps encountered ("don't do Z because...")
+│   └── TECH_DECISIONS.md # Architecture choices + reasoning
+├── tasks/               # Sub-agent task briefs
+└── qa-reports/          # QA results, review findings
+```
+
+**Commit `.prism/` to git.** Teammates pull → their Claude has all the context. No re-explaining.
+
+### 3. 12 Pre-Built Skills
+
+Installed globally to `~/.claude/skills/`. Available in every project.
+
+| Skill | Role | Model |
+|-------|------|-------|
+| master-agent | Plans, decomposes, delegates, reviews | Opus |
+| sub-agent | Focused executor, reads brief → delivers | Sonnet |
+| paranoid-review | Finds production bugs (2-pass review) | Opus |
+| qa-engineer | Health scoring, evidence-based verification | Sonnet |
+| ship-engineer | Sync, test, commit, push, PR | Sonnet |
+| design-auditor | 80-item UI/UX checklist + AI slop detection | Sonnet |
+| browser-agent | Browser automation (gstack browse + Playwright fallback) | Sonnet |
+| sprint-retro | Metrics, wins, improvements, action items | Sonnet |
+| cost-tracker | Token estimates, model tier optimization | Haiku |
+| knowledge-spine | Captures rules, gotchas, decisions | Sonnet |
+| context-compactor | Session handoff (STAGING.md) | Sonnet |
+| gstack-bridge | Routes to gstack cognitive modes (lazy-load) | Sonnet |
 
 ---
 
-## Contributing / Đóng góp
+## How It Works
 
-Contributions are welcome! Feel free to open issues or submit pull requests.
-
-## License
-
-MIT
+```
+You describe what you need
+    │
+    ▼
+Claude ASKS first (doesn't jump to code)
+    │ "Who is this for? What's the priority? Any constraints?"
+    │
+    ▼
+Claude presents a DESIGN (section by section, you approve)
+    │
+    ▼
+Claude creates a PLAN (micro-tasks, model tiers, cost estimate)
+    │ ← You review → type GO
+    │
+    ├── Small task? → Claude does it directly (GSD mode)
+    │
+    ├── Complex? → Sub-agents execute in parallel
+    │   ├── Agent A: TASK_001 → done
+    │   └── Agent B: TASK_002 → done
+    │
+    ▼
+Review → QA → Ship → Knowledge saved for next time
+```
 
 ---
 
-> **Full guide / Hướng dẫn đầy đủ:** See [GETTING-STARTED.md](GETTING-STARTED.md)
+## Team Use (optional — works great solo too)
+
+When multiple people use PRISM on the same repo:
+
+```bash
+# Your workflow
+claude                            # Claude reads CLAUDE.md + .prism/
+# ... do work ...
+git add .prism/ && git commit     # Save knowledge to git
+
+# Teammate's workflow
+git pull                          # Gets your .prism/ updates
+claude                            # Their Claude has all your context
+```
+
+`.prism/knowledge/` grows over time. Rules, gotchas, decisions — shared team brain via git.
+
+---
+
+## Why This Playbook?
+
+| Problem | How PRISM solves it |
+|---------|-------------------|
+| Claude jumps straight to code | Asks first, designs, then you approve |
+| Context lost in long chats | `/compact` → STAGING.md → fresh session resumes |
+| Knowledge lost between sessions | `.prism/knowledge/` persists via git |
+| Wasted tokens on irrelevant files | `.claudecodeignore` + isolated sub-agent sessions |
+| Inconsistent output quality | CONTEXT_HUB + templates + RULES.md |
+| No visibility into what AI is doing | MASTER_PLAN + structured handovers |
+
+---
+
+## Requirements
+
+| Required | Install |
+|----------|---------|
+| **Claude Code** | `npm install -g @anthropic-ai/claude-code` |
+| **Claude account** | [claude.ai](https://claude.ai) (Pro $20/mo or Max $100/mo) |
+| **Git** | [git-scm.com](https://git-scm.com) |
+
+| Optional | Why |
+|----------|-----|
+| Bun | For gstack `/browse` browser automation |
+| tmux | Multiple agent terminals side-by-side |
+
+---
+
+## Management
+
+```bash
+./setup --status     # What's installed
+./setup --update     # Update gstack to latest
+./setup --uninstall  # Remove global installs
+```
+
+---
+
+**Full guide:** [GETTING-STARTED.md](GETTING-STARTED.md) | **License:** MIT

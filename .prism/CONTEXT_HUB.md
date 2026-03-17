@@ -5,19 +5,19 @@
 
 ## WHY — Why this project exists
 
-PRISM is an open-source AI Agent Orchestration Framework for Claude Code.
-It turns Claude from a single "AI coder" into a multi-role "AI Team Manager" with
-structured planning, parallel sub-agent execution, knowledge persistence, and
-cognitive mode switching (via gstack integration).
+PRISM is an open-source AI Team Playbook for Claude Code.
+It provides conventions, templates, and pre-built skills that make Claude Code
+work like a professional AI team — structured planning, parallel execution,
+knowledge persistence, and cognitive mode switching (via gstack integration).
 
-Goal: help developers get 2-3x more output from Claude Code with better quality,
+Goal: help anyone using Claude Code get 2-3x more output with better quality,
 less token waste, and no context loss between sessions.
 
 ## WHO — Who receives the output
 
-- **Primary**: Developers using Claude Code daily — need a plug-and-play framework
-- **Secondary**: Teams sharing AI context via git — need `.prism/` to be portable
-- **Community**: Open-source users — need clear docs, easy setup, professional quality
+- **Primary**: Anyone using Claude Code — needs a plug-and-play playbook
+- **Secondary**: Teams sharing AI context via git — needs `.prism/` to be portable
+- **Community**: Open-source users — needs clear docs, easy setup, professional quality
 
 ## STANDARDS — Output standards
 
@@ -28,7 +28,7 @@ less token waste, and no context loss between sessions.
 - Naming: kebab-case for directories, UPPER_SNAKE for .prism/ files
 
 ### Document Standards
-- Language: Bilingual — English primary, Vietnamese parallel
+- Language: Bilingual — English primary, Vietnamese parallel where helpful
 - Format: GitHub-flavored Markdown
 - All docs must match actual code/behavior (no stale docs)
 
@@ -39,11 +39,11 @@ less token waste, and no context loss between sessions.
 
 ## TECH STACK
 
-- **Framework**: Pure Markdown + Bash (zero dependencies for core)
+- **Core**: Pure Markdown + Bash (zero dependencies)
 - **Skills**: Claude Code SKILL.md format (frontmatter YAML + Markdown body)
 - **Integration**: gstack (Garry Tan / YC) as git submodule in vendor/
 - **Browser**: gstack browse binary (requires Bun runtime)
-- **Hosting**: GitHub — github.com/duyentb95/prism-framework
+- **Hosting**: GitHub — github.com/duyentb95/prism-playbook
 
 ## KEY CONSTRAINTS
 

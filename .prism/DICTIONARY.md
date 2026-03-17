@@ -8,7 +8,7 @@
 
 | Term | Definition | Context |
 |------|-----------|---------|
-| `PRISM` | Plan → Review → Implement → Ship → Monitor | Core framework lifecycle |
+| `PRISM` | Plan → Review → Implement → Ship → Monitor | Core playbook lifecycle |
 | `Master-Agent` | The orchestrator that plans, decomposes, delegates, reviews | Opus-tier, runs in main session |
 | `Sub-Agent` | Focused executor that reads a task brief and delivers | Sonnet-tier, runs in separate session |
 | `GSD` | Get Shit Done — do it yourself if task < 15 min | Quick strike mode, no sub-agent needed |

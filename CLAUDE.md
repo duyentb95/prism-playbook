@@ -1,4 +1,4 @@
-# CLAUDE.md — PRISM Framework
+# CLAUDE.md — PRISM Playbook
 
 > **P**lan → **R**eview → **I**mplement → **S**hip → **M**onitor
 > Biến Claude Code từ "coder" thành "AI Team" đa vai trò chuyên nghiệp.

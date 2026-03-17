@@ -3,8 +3,8 @@
 # PRISM — Setup v2
 # ============================================================
 #
-# Architecture: gstack is vendored inside this framework repo.
-#   - Clone framework ONCE → gstack included
+# Architecture: gstack is vendored inside this playbook repo.
+#   - Clone playbook ONCE → gstack included
 #   - ./setup installs everything globally
 #   - ./setup --project /path → add to any project
 #   - ./setup --update → pull latest gstack
@@ -288,7 +288,7 @@ case "${1:-}" in
     --help|-h)
         echo -e "\nUsage: ./setup [option]\n"
         echo "  (no args)                Full install: global + current dir"
-        echo "  --project /path          Add framework to existing project"
+        echo "  --project /path          Add playbook to existing project"
         echo "  --update                 Update gstack to latest"
         echo "  --status                 Check installation status"
         echo "  --uninstall              Remove all global installs"

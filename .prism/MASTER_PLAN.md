@@ -5,17 +5,19 @@
 
 ## Current Sprint
 
-**Sprint**: #5 — Browser Automation
-**Goal**: Create browser-agent skill with dual-engine support (gstack browse + Playwright fallback)
+**Sprint**: #6 — Playbook Pivot
+**Goal**: Rebrand framework → playbook, rewrite docs, create CLAUDE.md templates
 **Status**: ✅ Complete
 
 ## Task Board
 
 | ID | Task | Model Tier | Status | Deps | Notes |
 |----|------|-----------|--------|------|-------|
-| TASK_501 | Create browser-agent skill | GSD | ✅ | None | Dual-engine: gstack browse + Playwright fallback + script gen |
-| TASK_502 | Update gstack-bridge routing | GSD | ✅ | 501 | Browser intents → browser-agent first |
-| TASK_503 | Update setup script for 12 skills | GSD | ✅ | 501 | browser-agent added to status + uninstall |
+| TASK_601 | Rewrite README.md — playbook positioning | GSD | ✅ | None | Solo-first, team-optional |
+| TASK_602 | Rewrite GETTING-STARTED.md — user-centric | GSD | ✅ | None | 15-min onboarding |
+| TASK_603 | Create 5 CLAUDE.md templates | GSD | ✅ | None | minimal, web-app, api, data, non-code |
+| TASK_604 | Update CONTEXT_HUB + DICTIONARY + CLAUDE.md | GSD | ✅ | 601 | framework → playbook |
+| TASK_605 | Update setup script messaging | GSD | ✅ | 601 | framework → playbook |
 
 ### Status Legend
 - ⏳ Not started
@@ -36,6 +38,15 @@
 | TASK_003 | Push to GitHub duyentb95/prism-framework | ✅ | Bilingual README + GETTING-STARTED |
 | TASK_004 | Create .prism/knowledge/ seed files | ✅ | RULES.md, GOTCHAS.md, TECH_DECISIONS.md |
 | TASK_005 | Validate skills by testing commands | ✅ | All 5 preambles pass |
+
+### Sprint #5 — Browser Automation
+**Status**: ✅ Complete
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| TASK_501 | Create browser-agent skill | ✅ | Dual-engine: gstack + Playwright fallback |
+| TASK_502 | Update gstack-bridge routing | ✅ | Browser intents → browser-agent |
+| TASK_503 | Update setup for 12 skills | ✅ | browser-agent in status + uninstall |
 
 ### Sprint #4 — Close gstack Gaps
 **Status**: ✅ Complete
@@ -70,6 +81,11 @@
 | TASK_501 | 2026-03-17 | Created browser-agent skill (dual-engine) | skills/browser-agent/SKILL.md |
 | TASK_502 | 2026-03-17 | Updated gstack-bridge routing for browser | skills/gstack-bridge/SKILL.md |
 | TASK_503 | 2026-03-17 | Updated setup script for 12 skills | setup |
+| TASK_601 | 2026-03-17 | Rewrite README — playbook positioning | README.md |
+| TASK_602 | 2026-03-17 | Rewrite GETTING-STARTED — user-centric | GETTING-STARTED.md |
+| TASK_603 | 2026-03-17 | Created 5 CLAUDE.md templates | templates/*.md |
+| TASK_604 | 2026-03-17 | Updated CONTEXT_HUB, DICTIONARY, CLAUDE.md | .prism/, CLAUDE.md |
+| TASK_605 | 2026-03-17 | Updated setup script messaging | setup |
 
 ## Blockers & Issues
 
