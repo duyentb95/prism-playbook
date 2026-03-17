@@ -48,3 +48,10 @@
 - **Alternatives**: Rely solely on gstack /qa-design-review (requires gstack), skip design audit entirely (gap remains)
 - **Reasoning**: Design quality is critical for web projects. Having a PRISM-native option means the audit works even without gstack installed. gstack delegation still available for browser-based visual testing.
 - **Consequences**: New skill added to framework. Setup script updated to include in status/uninstall. Total skills: 11.
+
+## 2026-03-17 — Browser-agent with dual-engine fallback (not gstack-only)
+- **Context**: gstack browse binary requires Bun + build step. Many users won't have it. Browser testing was gstack-only.
+- **Decision**: Create PRISM-native browser-agent skill with 3-tier engine detection: gstack browse → Playwright CLI → script generation.
+- **Alternatives**: Only delegate to gstack (fails without gstack), bundle Playwright binary (too heavy), skip browser testing (gap remains)
+- **Reasoning**: Dual-engine means browser testing always works. gstack browse when available (fastest, 100ms), Playwright CLI as middle ground, generated scripts as universal fallback. Engine detection is automatic via preamble.
+- **Consequences**: browser-agent wraps gstack browse commands when available but is not dependent on gstack. gstack-bridge routes "browse" intents to browser-agent instead of directly to gstack /browse. Total skills: 12.

@@ -69,18 +69,28 @@ USER INTENT                              → ROUTE TO
 "plan this feature"                      → PRISM /plan (DO NOT route to gstack)
 "compress context" / "save state"        → PRISM context-compactor
 "what's the plan" / "project overview"   → PRISM knowledge-spine / /status
+"browse" / "open page" / "screenshot"    → PRISM browser-agent (auto-detects engine)
+"test the site" / "check the page"       → PRISM browser-agent (auto-detects engine)
+"responsive test" / "check mobile"       → PRISM browser-agent (auto-detects engine)
+"design audit" / "visual QA"             → PRISM design-auditor
 
 "review plan as CEO" / "is this right?"  → gstack /plan-ceo-review
 "lock the architecture"                  → gstack /plan-eng-review
 "review my code before merge"            → gstack /review
 "ship this branch"                       → gstack /ship
-"test the website" / "QA this"           → gstack /qa or /browse
+"full QA with browser" / "QA this"       → gstack /qa (deep diff-aware testing)
 "how does the design look"               → gstack /plan-design-review
 "fix the design issues"                  → gstack /qa-design-review
 "create a design system"                 → gstack /design-consultation
 "update the docs post-ship"              → gstack /document-release
 "weekly retro" / "what did we ship"      → gstack /retro
 ```
+
+**Browser routing logic:**
+- "browse", "screenshot", "open page", "check the page" → PRISM browser-agent
+  (uses gstack browse binary if available, Playwright fallback if not)
+- "full QA", "diff-aware QA" → gstack /qa (requires gstack SKILL.md for full workflow)
+- browser-agent handles engine detection internally — no need to check gstack first
 
 ### PRISM commands vs gstack commands — same concept, different depth
 

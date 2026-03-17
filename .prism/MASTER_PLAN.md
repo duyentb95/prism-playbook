@@ -5,19 +5,17 @@
 
 ## Current Sprint
 
-**Sprint**: #4 — Close gstack Gaps
-**Goal**: Create design-auditor skill, add JSON persistence, add session detection
+**Sprint**: #5 — Browser Automation
+**Goal**: Create browser-agent skill with dual-engine support (gstack browse + Playwright fallback)
 **Status**: ✅ Complete
 
 ## Task Board
 
 | ID | Task | Model Tier | Status | Deps | Notes |
 |----|------|-----------|--------|------|-------|
-| TASK_401 | Create design-auditor skill | GSD | ✅ | None | 80-item checklist, 5 sections, AI slop detection |
-| TASK_402 | Add JSON persistence to qa-engineer | GSD | ✅ | None | JSON snapshot alongside markdown report |
-| TASK_403 | Add JSON persistence to sprint-retro | GSD | ✅ | None | JSON snapshot with session data |
-| TASK_404 | Add session detection to sprint-retro | GSD | ✅ | None | 45-min gap algorithm, work pattern analysis |
-| TASK_405 | Update setup script for all 11 skills | GSD | ✅ | 401 | Status check + uninstall cover all skills |
+| TASK_501 | Create browser-agent skill | GSD | ✅ | None | Dual-engine: gstack browse + Playwright fallback + script gen |
+| TASK_502 | Update gstack-bridge routing | GSD | ✅ | 501 | Browser intents → browser-agent first |
+| TASK_503 | Update setup script for 12 skills | GSD | ✅ | 501 | browser-agent added to status + uninstall |
 
 ### Status Legend
 - ⏳ Not started
@@ -39,6 +37,16 @@
 | TASK_004 | Create .prism/knowledge/ seed files | ✅ | RULES.md, GOTCHAS.md, TECH_DECISIONS.md |
 | TASK_005 | Validate skills by testing commands | ✅ | All 5 preambles pass |
 
+### Sprint #4 — Close gstack Gaps
+**Status**: ✅ Complete
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| TASK_401 | Create design-auditor skill | ✅ | 80-item checklist, AI slop detection |
+| TASK_402-403 | JSON persistence for qa-engineer + sprint-retro | ✅ | Dual output (MD + JSON) |
+| TASK_404 | Session detection in sprint-retro | ✅ | 45-min gap heuristic |
+| TASK_405 | Update setup for 11 skills | ✅ | Status + uninstall |
+
 ### Sprints #2-3 — Upgrade Skills to gstack Parity
 **Status**: ✅ Complete
 
@@ -59,6 +67,9 @@
 | TASK_403 | 2026-03-17 | Added JSON persistence to sprint-retro | skills/sprint-retro/SKILL.md |
 | TASK_404 | 2026-03-17 | Added session detection to sprint-retro | skills/sprint-retro/SKILL.md |
 | TASK_405 | 2026-03-17 | Updated setup script for all 11 skills | setup |
+| TASK_501 | 2026-03-17 | Created browser-agent skill (dual-engine) | skills/browser-agent/SKILL.md |
+| TASK_502 | 2026-03-17 | Updated gstack-bridge routing for browser | skills/gstack-bridge/SKILL.md |
+| TASK_503 | 2026-03-17 | Updated setup script for 12 skills | setup |
 
 ## Blockers & Issues
 

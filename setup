@@ -214,7 +214,7 @@ check_status() {
     [ -f "$GSTACK_VENDOR/setup" ] && log_ok "vendor/gstack/" || log_warn "vendor/gstack/ (run --update)"
 
     echo -e "\n  ${BOLD}Global installs (~/.claude/skills/):${NC}"
-    for s in master-agent sub-agent context-compactor knowledge-spine gstack-bridge cost-tracker qa-engineer paranoid-review ship-engineer sprint-retro design-auditor; do
+    for s in master-agent sub-agent context-compactor knowledge-spine gstack-bridge cost-tracker qa-engineer paranoid-review ship-engineer sprint-retro design-auditor browser-agent; do
         [ -d "$GLOBAL_SKILLS/$s" ] && log_ok "$s" || log_warn "$s"
     done
     [ -d "$GLOBAL_SKILLS/gstack" ] && log_ok "gstack" || log_warn "gstack"
@@ -236,7 +236,7 @@ check_status() {
 
 uninstall_all() {
     log_step "Uninstalling..."
-    for s in master-agent sub-agent context-compactor knowledge-spine gstack-bridge cost-tracker qa-engineer paranoid-review ship-engineer sprint-retro design-auditor; do
+    for s in master-agent sub-agent context-compactor knowledge-spine gstack-bridge cost-tracker qa-engineer paranoid-review ship-engineer sprint-retro design-auditor browser-agent; do
         rm -rf "$GLOBAL_SKILLS/$s" 2>/dev/null && log_ok "Removed $s"
     done
     for s in browse plan-ceo-review plan-eng-review review ship retro qa qa-only setup-browser-cookies document-release gstack-upgrade; do
