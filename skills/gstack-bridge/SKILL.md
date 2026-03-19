@@ -80,10 +80,17 @@ USER INTENT                              → ROUTE TO
 "ship this branch"                       → gstack /ship
 "full QA with browser" / "QA this"       → gstack /qa (deep diff-aware testing)
 "how does the design look"               → gstack /plan-design-review
-"fix the design issues"                  → gstack /qa-design-review
+"fix the design issues"                  → gstack /design-review (audit + fix loop)
 "create a design system"                 → gstack /design-consultation
 "update the docs post-ship"              → gstack /document-release
 "weekly retro" / "what did we ship"      → gstack /retro
+"second opinion" / "adversarial review"  → gstack /codex (sends code to OpenAI)
+"debug this" / "trace the bug"           → gstack /investigate (root-cause debugging)
+"YC office hours" / "startup diagnostic" → gstack /office-hours
+"be careful" / "destructive warning"     → gstack /careful
+"lock edits to this dir"                 → gstack /freeze
+"remove edit lock"                       → gstack /unfreeze
+"maximum safety mode"                    → gstack /guard (freeze + careful combined)
 ```
 
 **Browser routing logic:**
@@ -103,6 +110,12 @@ USER INTENT                              → ROUTE TO
 | `/document-release` | `/doc-release` | PRISM: inline checklist. gstack: cross-references git diff vs every doc |
 | `/qa-check` | `/qa` | PRISM: manual evidence. gstack: diff-aware browser testing, 3 tiers, fix loop |
 | `/retro` | `/retro` (gstack) | PRISM: inline format. gstack: commit analysis, per-person breakdown |
+| `/brainstorm` | `/office-hours` | PRISM: general brainstorm. gstack: YC Office Hours format, startup diagnostic |
+| — | `/codex` | No PRISM equivalent. Multi-AI second opinion via OpenAI Codex CLI |
+| — | `/investigate` | No PRISM equivalent. Systematic root-cause debugging |
+| — | `/careful` | No PRISM equivalent. Destructive command warnings |
+| — | `/freeze` / `/unfreeze` | No PRISM equivalent. Directory-scoped edit lock |
+| — | `/guard` | No PRISM equivalent. Full safety mode (freeze + careful) |
 
 **Rule of thumb:**
 - Quick / inline check → use PRISM command (reads from CLAUDE.md, 0 extra tokens)
@@ -122,8 +135,15 @@ All SKILL.md paths are relative to `$GSTACK/`:
 | `/plan-ceo-review` | `plan-ceo-review/SKILL.md` | — |
 | `/plan-eng-review` | `plan-eng-review/SKILL.md` | — |
 | `/plan-design-review` | `plan-design-review/SKILL.md` | — |
-| `/qa-design-review` | `qa-design-review/SKILL.md` | — |
+| `/design-review` | `design-review/SKILL.md` | — |
 | `/design-consultation` | `design-consultation/SKILL.md` | — |
+| `/codex` | `codex/SKILL.md` | — |
+| `/investigate` | `investigate/SKILL.md` | — |
+| `/office-hours` | `office-hours/SKILL.md` | — |
+| `/careful` | `careful/SKILL.md` | — |
+| `/freeze` | `freeze/SKILL.md` | — |
+| `/unfreeze` | `unfreeze/SKILL.md` | — |
+| `/guard` | `guard/SKILL.md` | — |
 | `/review` | `review/SKILL.md` | `review/checklist.md`, `review/greptile-triage.md` |
 | `/ship` | `ship/SKILL.md` | `review/checklist.md`, `review/greptile-triage.md` |
 | `/qa` | `qa/SKILL.md` | `qa/references/issue-taxonomy.md` |
@@ -178,7 +198,14 @@ After any gstack command completes, save output to the PRISM knowledge system:
 | `/retro` lessons | `.prism/knowledge/GOTCHAS.md` (append) | Extracted patterns |
 | `/design-consultation` | `DESIGN.md` (project root) | Design system reference |
 | `/plan-design-review` | `.prism/qa-reports/design-audit_{date}.md` | Letter grades + issues |
+| `/design-review` | `.prism/qa-reports/design-review_{date}.md` | Audit + fixes applied |
 | `/doc-release` | `.prism/knowledge/RULES.md` (append) | New patterns discovered |
+| `/codex` | `.prism/reviews/codex_{date}.md` | Cross-model findings + pass/fail |
+| `/investigate` | `.prism/knowledge/GOTCHAS.md` (append) | Root cause + fix |
+| `/office-hours` | `.prism/designs/office-hours_{topic}_{date}.md` | Diagnostic + action items |
+| `/careful` | — (no persistent output) | Runtime warnings only |
+| `/freeze` / `/unfreeze` | — (no persistent output) | Session-scoped lock |
+| `/guard` | — (no persistent output) | Session-scoped safety mode |
 
 ### Post-gstack Checklist
 

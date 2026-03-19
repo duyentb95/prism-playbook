@@ -255,10 +255,10 @@ gstack Senior designer's eye. 80-item audit, letter grades, AI slop detection. R
 
 ---
 
-# /qa-design-review
+# /design-review
 
 gstack Designer + frontend dev. Same audit as /plan-design-review, then fixes issues with atomic commits.
-→ Lazy-load `gstack/qa-design-review/SKILL.md`
+→ Lazy-load `gstack/design-review/SKILL.md`
 
 ---
 
@@ -341,6 +341,61 @@ Upgrade gstack to latest version.
 
 ---
 
+### Multi-AI & Debugging
+
+# /codex
+
+gstack Multi-AI second opinion. Review, challenge, or ask OpenAI Codex CLI about your code. **Note: sends code to OpenAI.**
+→ Lazy-load `gstack/codex/SKILL.md`
+
+---
+
+# /investigate
+
+gstack Systematic root-cause debugging. Trace errors, find why things fail, identify root cause.
+→ Lazy-load `gstack/investigate/SKILL.md`
+
+---
+
+### Safety & Scope Control
+
+# /careful
+
+gstack Destructive command warnings. Warns before any risky/irreversible operation.
+→ Lazy-load `gstack/careful/SKILL.md`
+
+---
+
+# /freeze
+
+gstack Directory-scoped edit lock. Restrict edits to a specific module/directory.
+→ Lazy-load `gstack/freeze/SKILL.md`
+
+---
+
+# /unfreeze
+
+gstack Remove edit restrictions set by /freeze.
+→ Lazy-load `gstack/unfreeze/SKILL.md`
+
+---
+
+# /guard
+
+gstack Maximum safety mode. Combines /freeze (edit restrictions) + /careful (destructive warnings).
+→ Lazy-load `gstack/guard/SKILL.md`
+
+---
+
+### Brainstorming
+
+# /office-hours
+
+gstack YC Office Hours — startup diagnostic and builder brainstorm. Different from PRISM /brainstorm: uses YC framework.
+→ Lazy-load `gstack/office-hours/SKILL.md`
+
+---
+
 ## PRISM vs gstack — Khi nào dùng cái nào?
 
 | Nhu cầu | PRISM Command | gstack Command | Chọn nào? |
@@ -352,7 +407,14 @@ Upgrade gstack to latest version.
 | Update docs | `/document-release` | `/doc-release` | gstack: cross-ref git diff |
 | QA testing | `/qa-check` | `/qa` | gstack: browser automation + diff-aware |
 | Sprint retro | `/retro` | `/retro --gstack` | gstack: commit analysis + metrics |
-| Design audit | — | `/plan-design-review` | gstack only |
+| Design audit (report) | — | `/plan-design-review` | gstack only |
+| Design audit (fix) | — | `/design-review` | gstack only (was /qa-design-review) |
 | Design system | — | `/design-consultation` | gstack only |
 | Browser automation | — | `/browse` | gstack only |
+| Second opinion | — | `/codex` | gstack only (sends code to OpenAI) |
+| Root-cause debugging | — | `/investigate` | gstack only |
+| Startup brainstorm | `/brainstorm` | `/office-hours` | PRISM: general. gstack: YC framework |
+| Destructive warnings | — | `/careful` | gstack only |
+| Edit lock | — | `/freeze` / `/unfreeze` | gstack only |
+| Full safety mode | — | `/guard` | gstack only (freeze + careful) |
 
