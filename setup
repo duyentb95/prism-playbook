@@ -58,6 +58,9 @@ populate_prism_shared() {
     ver=$(git -C "$FRAMEWORK_DIR" describe --tags 2>/dev/null || git -C "$FRAMEWORK_DIR" rev-parse --short HEAD 2>/dev/null || echo "unknown")
     echo "$ver" > "$PRISM_SHARED/version"
 
+    # Store source path for /prism-upgrade
+    echo "$FRAMEWORK_DIR" > "$PRISM_SHARED/source-path"
+
     local cmd_count
     cmd_count=$(ls "$PRISM_SHARED/commands"/*.md 2>/dev/null | wc -l | tr -d ' ')
     log_ok "~/.prism/commands/ refreshed ($cmd_count commands, version: $ver)"
