@@ -24,9 +24,15 @@ Run these steps in order:
    PRISM_SOURCE="$HOME/.prism/source"
    ```
 
-4. **Run update:**
+4. **Review before running setup:** Show the user what changed since last update:
+   ```bash
+   cd "$PRISM_SOURCE" && git log --oneline -10
+   ```
+   Then **ask the user for confirmation** before proceeding: "These commits will be applied. Run `./setup --update` now?"
+
+5. **Only after user confirms** — run update:
    ```bash
    cd "$PRISM_SOURCE" && ./setup --update
    ```
 
-5. **Report what changed:** Show the git log of new commits pulled, count of commands now available, and number of projects relinked.
+6. **Report what changed:** Show the git log of new commits pulled, count of commands now available, and number of projects relinked.

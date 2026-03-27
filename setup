@@ -189,7 +189,7 @@ install_global() {
     log_step "Installing gstack → $GLOBAL_SKILLS/gstack/"
 
     if [ -d "$GSTACK_VENDOR" ] && [ -f "$GSTACK_VENDOR/setup" ]; then
-        [ -d "$GLOBAL_SKILLS/gstack" ] && rm -rf "$GLOBAL_SKILLS/gstack"
+        [ -n "$GLOBAL_SKILLS" ] && [ -d "$GLOBAL_SKILLS/gstack" ] && rm -rf "$GLOBAL_SKILLS/gstack"
         cp -Rf "$GSTACK_VENDOR" "$GLOBAL_SKILLS/gstack"
         rm -rf "$GLOBAL_SKILLS/gstack/.git"
 
@@ -279,15 +279,20 @@ interview_project() {
     esac
 
     # Generate CLAUDE.md from template with project context
-    sed -e "s|{{PROJECT_NAME}}|${PROJECT_NAME}|g" \
-        -e "s|{{PROJECT_DESCRIPTION}}|${PROJECT_DESC}|g" \
-        -e "s|{{PROJECT_AUDIENCE}}|${PROJECT_AUDIENCE}|g" \
-        -e "s|{{TECH_STACK}}|${TECH_STACK}|g" \
+    # Escape sed delimiter in user input to prevent injection
+    local safe_name="${PROJECT_NAME//|/\\|}"
+    local safe_desc="${PROJECT_DESC//|/\\|}"
+    local safe_audience="${PROJECT_AUDIENCE//|/\\|}"
+    local safe_stack="${TECH_STACK//|/\\|}"
+    sed -e "s|{{PROJECT_NAME}}|${safe_name}|g" \
+        -e "s|{{PROJECT_DESCRIPTION}}|${safe_desc}|g" \
+        -e "s|{{PROJECT_AUDIENCE}}|${safe_audience}|g" \
+        -e "s|{{TECH_STACK}}|${safe_stack}|g" \
         "$FRAMEWORK_DIR/templates/$TEMPLATE_FILE" > "$P/CLAUDE.md"
     log_ok "CLAUDE.md (${TEMPLATE_FILE%.md})"
 
-    # Generate CONTEXT_HUB.md
-    cat > "$P/.prism/CONTEXT_HUB.md" << CONTEXT_EOF
+    # Generate CONTEXT_HUB.md (use quoted heredoc to prevent shell injection)
+    cat > "$P/.prism/CONTEXT_HUB.md" << 'CONTEXT_EOF'
 # CONTEXT HUB — Shared Project Context
 
 > Single Source of Truth for all agents.
@@ -295,17 +300,17 @@ interview_project() {
 
 ## WHY — Why this project exists
 
-${PROJECT_DESC}
+__PROJECT_DESC__
 
 ## WHO — Who receives the output
 
-- **Primary**: ${PROJECT_AUDIENCE}
+- **Primary**: __PROJECT_AUDIENCE__
 - **Secondary**: [Add as needed]
 
 ## STANDARDS — Output standards
 
 ### Code Standards
-- Language: ${TECH_STACK}
+- Language: __TECH_STACK__
 - Style: [Define your coding conventions]
 - Testing: [Define your testing approach]
 - Naming: [Define naming conventions]
@@ -319,7 +324,7 @@ ${PROJECT_DESC}
 
 ## TECH STACK
 
-- **Core**: ${TECH_STACK}
+- **Core**: __TECH_STACK__
 - [Add frameworks, tools, services as needed]
 
 ## KEY CONSTRAINTS
@@ -327,12 +332,19 @@ ${PROJECT_DESC}
 - [Add project constraints, deadlines, limitations]
 
 ---
-*Last updated: ${TODAY}*
+*Last updated: __TODAY__*
 *Updated by: Master-Agent*
 CONTEXT_EOF
+    # Safe substitution after heredoc (no shell expansion)
+    sed -i '' \
+        -e "s|__PROJECT_DESC__|${PROJECT_DESC//|/\\|}|g" \
+        -e "s|__PROJECT_AUDIENCE__|${PROJECT_AUDIENCE//|/\\|}|g" \
+        -e "s|__TECH_STACK__|${TECH_STACK//|/\\|}|g" \
+        -e "s|__TODAY__|${TODAY}|g" \
+        "$P/.prism/CONTEXT_HUB.md"
 
-    # Generate MASTER_PLAN.md
-    cat > "$P/.prism/MASTER_PLAN.md" << PLAN_EOF
+    # Generate MASTER_PLAN.md (use quoted heredoc to prevent shell injection)
+    cat > "$P/.prism/MASTER_PLAN.md" << 'PLAN_EOF'
 # MASTER PLAN
 
 > Managed by Master-Agent. Reviewed by Human.
@@ -341,7 +353,7 @@ CONTEXT_EOF
 ## Current Sprint
 
 **Sprint**: #1 — Project Setup
-**Goal**: ${PROJECT_NAME} — Initial setup and first deliverable
+**Goal**: __PROJECT_NAME__ — Initial setup and first deliverable
 **Status**: 🔄 In progress
 
 ## Task Board
@@ -368,8 +380,13 @@ CONTEXT_EOF
 |-------|----------|-------|--------|
 
 ---
-*Last updated: ${TODAY}*
+*Last updated: __TODAY__*
 PLAN_EOF
+    # Safe substitution after heredoc
+    sed -i '' \
+        -e "s|__PROJECT_NAME__|${PROJECT_NAME//|/\\|}|g" \
+        -e "s|__TODAY__|${TODAY}|g" \
+        "$P/.prism/MASTER_PLAN.md"
 
     # Generate DICTIONARY.md with domain terms
     cat > "$P/.prism/DICTIONARY.md" << 'DICT_EOF'
@@ -514,7 +531,7 @@ update_all() {
         cd "$GSTACK_VENDOR" && git pull --quiet && cd "$FRAMEWORK_DIR"
         log_ok "vendor/gstack updated"
     else
-        rm -rf "$GSTACK_VENDOR"
+        [ -n "$GSTACK_VENDOR" ] && rm -rf "$GSTACK_VENDOR"
         git clone --quiet --depth 1 https://github.com/garrytan/gstack.git "$GSTACK_VENDOR"
         log_ok "vendor/gstack re-cloned"
     fi

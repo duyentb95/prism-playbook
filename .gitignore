@@ -3,6 +3,17 @@ vendor/gstack/browse/dist/
 vendor/gstack/node_modules/
 vendor/gstack/.gstack/
 
+# Secrets — never commit these
+.env
+.env.*
+*.key
+*.pem
+*.secret
+credentials.json
+
+# Local settings (machine-specific permissions)
+.claude/settings.local.json
+
 # OS
 .DS_Store
 Thumbs.db
