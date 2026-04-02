@@ -139,6 +139,109 @@ git diff origin/<base> --name-only | grep -E '\.(tsx|jsx|css|scss|html|vue|svelt
 
 ---
 
+## Step 4.7: Review Army — Specialist Dispatch
+
+### Detect stack and diff size
+
+```bash
+STACK=""
+[ -f Gemfile ] && STACK="${STACK}ruby "
+[ -f package.json ] && STACK="${STACK}node "
+[ -f requirements.txt ] || [ -f pyproject.toml ] && STACK="${STACK}python "
+[ -f go.mod ] && STACK="${STACK}go "
+[ -f Cargo.toml ] && STACK="${STACK}rust "
+echo "STACK: ${STACK:-unknown}"
+DIFF_LINES=$(git diff origin/<base> --stat | tail -1 | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
+echo "DIFF_LINES: $DIFF_LINES"
+```
+
+### Detect scope signals
+
+From the diff, detect which areas are affected:
+- **SCOPE_AUTH**: diff touches auth/login/session/token/permission files
+- **SCOPE_BACKEND**: diff touches server/API/model/service files
+- **SCOPE_FRONTEND**: diff touches components/views/CSS/JS files
+- **SCOPE_MIGRATIONS**: diff touches migration/schema files
+- **SCOPE_API**: diff touches controller/route/endpoint files
+
+### Select specialists
+
+**Always-on (every review with 50+ changed lines):**
+1. **Testing** — read `.claude/skills/code-review/specialists/testing.md`
+2. **Maintainability** — read `.claude/skills/code-review/specialists/maintainability.md`
+
+**If DIFF_LINES < 50:** Skip all specialists. Print: "Small diff — specialists skipped." Continue to Step 5.
+
+**Conditional (dispatch if matching scope signal is true):**
+3. **Security** — if SCOPE_AUTH or (SCOPE_BACKEND and DIFF_LINES > 100). Read `specialists/security.md`
+4. **Performance** — if SCOPE_BACKEND or SCOPE_FRONTEND. Read `specialists/performance.md`
+5. **Data Migration** — if SCOPE_MIGRATIONS. Read `specialists/data-migration.md`
+6. **API Contract** — if SCOPE_API. Read `specialists/api-contract.md`
+
+Print: "Dispatching N specialists: [names]. Skipped: [names]."
+
+### Dispatch specialists in parallel
+
+For each selected specialist, launch an independent subagent via the Agent tool.
+**Launch ALL selected specialists in a single message** so they run in parallel.
+
+**Each specialist subagent prompt:**
+
+"You are a specialist code reviewer. Run `git diff origin/<base>` to get the full diff.
+Apply the checklist below against the diff.
+
+For each finding, output a JSON object on its own line:
+{"severity":"CRITICAL|INFORMATIONAL","confidence":N,"path":"file","line":N,"category":"category","summary":"description","fix":"recommended fix","specialist":"name"}
+
+If no findings: output `NO FINDINGS` and nothing else.
+Stack context: {STACK}
+
+CHECKLIST:
+{checklist content}"
+
+- Use `subagent_type: "general-purpose"`
+- Do NOT use `run_in_background` — all must complete before merge
+- If any specialist fails, continue with results from successful ones
+
+### Collect and merge findings
+
+After all specialists complete:
+
+1. Parse each specialist's output — skip "NO FINDINGS", parse JSON lines
+2. **Deduplicate by fingerprint** (`path:line:category`). When duplicated:
+   - Keep highest confidence, tag "MULTI-SPECIALIST CONFIRMED"
+   - Boost confidence by +1 (cap at 10)
+3. **Confidence gates**: 7+ show normally, 5-6 show with caveat, 3-4 suppress to appendix, 1-2 suppress entirely
+4. **PR Quality Score**: `max(0, 10 - (critical * 2 + informational * 0.5))`
+
+Output:
+```
+SPECIALIST REVIEW: N findings (X critical, Y informational) from Z specialists
+
+[SEVERITY] (confidence: N/10, specialist: name) path:line — summary
+  Fix: recommended fix
+  [If MULTI-SPECIALIST CONFIRMED: note]
+
+PR Quality Score: X/10
+```
+
+### Red Team dispatch (conditional)
+
+**Activate only if** DIFF_LINES > 200 OR any specialist produced a CRITICAL finding.
+
+Dispatch one more subagent with:
+- The red-team checklist from `specialists/red-team.md`
+- Summary of merged specialist findings
+- The git diff command
+
+Prompt: "You are a red team reviewer. N specialists already found these issues: {summary}.
+Your job is to find what they MISSED. Focus on cross-cutting concerns, integration
+boundaries, and failure modes that specialist checklists don't cover."
+
+Merge Red Team findings into the list before Step 5.
+
+---
+
 ## Step 5: Fix-First Review
 
 **Every finding gets action — not just critical ones.**

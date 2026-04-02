@@ -253,6 +253,44 @@ find . -name '*.test.*' -o -name '*.spec.*' -o -name '*_test.*' -o -name '*_spec
 
 ---
 
+## Step 3.48: Scope Drift Detection
+
+Before reviewing code quality, check: **did they build what was requested — nothing more, nothing less?**
+
+1. Read `TODOS.md` (if exists). Read PR description (`gh pr view --json body --jq .body 2>/dev/null || true`).
+   Read commit messages (`git log origin/<base>..HEAD --oneline`).
+   If `.prism/MASTER_PLAN.md` exists, read it for the stated plan.
+   **If no PR exists:** rely on commit messages, MASTER_PLAN.md, and TODOS.md for stated intent.
+
+2. Identify the **stated intent** — what was this branch supposed to accomplish?
+
+3. Run `git diff origin/<base>...HEAD --stat` and compare files changed against stated intent.
+
+4. Evaluate with skepticism:
+
+   **SCOPE CREEP detection:**
+   - Files changed that are unrelated to the stated intent
+   - New features or refactors not mentioned in the plan
+   - "While I was in there..." changes that expand blast radius
+
+   **MISSING REQUIREMENTS detection:**
+   - Requirements from MASTER_PLAN.md/TODOS.md not addressed in the diff
+   - Test coverage gaps for stated requirements
+   - Partial implementations (started but not finished)
+
+5. Output:
+   ```
+   Scope Check: [CLEAN / DRIFT DETECTED / REQUIREMENTS MISSING]
+   Intent: <1-line summary of what was requested>
+   Delivered: <1-line summary of what the diff actually does>
+   [If drift: list each out-of-scope change]
+   [If missing: list each unaddressed requirement]
+   ```
+
+6. This is **INFORMATIONAL** — does not block the ship. Include in PR body.
+
+---
+
 ## Step 3.5: Pre-Landing Review
 
 Review the diff for structural issues that tests don't catch.
@@ -444,6 +482,9 @@ gh pr create --base <base> --title "<type>: <summary>" --body "$(cat <<'EOF'
 <coverage diagram from Step 3.4, or "All new code paths have test coverage.">
 <If Step 3.4 ran: "Tests: {before} -> {after} (+{delta} new)">
 <Test Coverage Audit line: "N code paths. M covered (X%). K tests generated.">
+
+## Scope Drift
+<If scope drift ran: findings from Step 3.48, or "Scope Check: CLEAN">
 
 ## Pre-Landing Review
 <findings from Step 3.5, or "No issues found.">

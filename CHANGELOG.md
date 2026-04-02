@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.0] - 2026-04-01
+
+### Added
+- Review Army: 7 parallel specialist reviewers for /review (testing, maintainability, security, performance, data-migration, api-contract, red-team)
+- Specialist checklists at `.claude/skills/code-review/specialists/`
+- PR Quality Score computation (0-10) with multi-specialist confirmation
+- Scope drift detection in /ship (Step 3.48) — checks built vs planned before shipping
+- Scope drift results included in PR body
+
 ## [3.1.0] - 2026-03-29
 
 ### Added
