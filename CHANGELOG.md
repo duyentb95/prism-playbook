@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.0] - 2026-04-02
+
+### Added
+- /learn command — manage project learnings (show, search, prune, export, stats, add)
+- learn skill at `.claude/skills/learn/` with JSONL storage at `.prism/learnings.jsonl`
+- Operational self-improvement: other skills can append learnings for future sessions
+- Export learnings to `.prism/knowledge/` markdown files
+
 ## [3.2.0] - 2026-04-01
 
 ### Added
