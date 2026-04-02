@@ -7,6 +7,25 @@ If no findings: output `NO FINDINGS` and nothing else.
 
 ---
 
+## Clean Code Thresholds
+
+Flag as INFORMATIONAL when exceeded:
+
+| Metric | Ideal | Acceptable | Flag |
+|--------|-------|-----------|------|
+| Function length | < 20 lines | < 50 lines | > 50 lines |
+| Parameters | 0-2 | 3 | > 3 (suggest options object) |
+| Nesting depth | 1-2 levels | 3 levels | > 3 (suggest early return/extract) |
+| File length | < 200 lines | < 400 lines | > 400 (suggest splitting) |
+| Duplicate blocks | 0 | 2 occurrences | 3+ (suggest extract helper) |
+
+**Readability principle:** Code is read 10x more than written. Optimize for the reader.
+- Names should reveal intent (no abbreviations unless universally understood)
+- Functions should do one thing (Single Responsibility)
+- No comments needed if names are clear enough
+
+---
+
 ## Categories
 
 ### Dead Code & Unused Imports

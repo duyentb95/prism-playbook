@@ -150,6 +150,24 @@ For complex tasks:
 3. Tell user: "Task TASK_NNN ready. Open new session and run:
    `Read .prism/tasks/TASK_NNN_xxx.md and EXECUTE. Assume I am AFK.`"
 
+### Proactive Delegation
+
+Some sub-agents should be dispatched AUTOMATICALLY without user asking:
+
+| Trigger | Auto-Dispatch | Why |
+|---------|--------------|-----|
+| Implementation complete | `/review` (code-review) | Every code change needs review |
+| Review passed, ready to merge | `/ship` suggestion | Natural next step |
+| Bug report or error trace | `/investigate` | Debugging should start immediately |
+| >5 CRITICAL in paranoid-review | Task brief for architectural fix | Systemic issue needs its own task |
+| Frontend files changed | Design review specialist | UI changes need visual check |
+
+**Protocol:**
+- Auto-dispatched agents run with standard permissions (not bypassed)
+- Always inform user: "Auto-dispatching /review — code changes detected."
+- User can cancel: "Skip review" → skip, but log that it was skipped
+- Never auto-dispatch destructive actions (/ship push, database changes)
+
 ---
 
 ## Step 6: Review Protocol

@@ -77,12 +77,64 @@ AskUserQuestion:
 
 ---
 
-## Step 1: CRITICAL Pass — "What will crash in production?"
+## Step 0.5: Scope Challenge (5 Questions)
 
-This pass ONLY looks for issues that cause: **data loss, security breach, crash,
+Before reviewing a single line, answer these out loud:
+
+1. **What files am I reviewing?** (list them)
+2. **What's OUT of scope?** (files NOT in the diff — do not review them)
+3. **What specific problems am I looking for?** (crash, data loss, security — not style)
+4. **What does "done" look like?** (all checklist items checked, report written)
+5. **What would make me STOP?** (>5 CRITICAL in one area = design smell → escalate)
+
+If you cannot answer all 5, re-read Step 0 output before proceeding.
+
+---
+
+## Step 1: CRITICAL Pass — 3-Pass Adversarial Review
+
+This pass uses **3 lenses** to prevent rationalization and blind spots.
+ONLY looks for issues that cause: **data loss, security breach, crash,
 incorrect business logic, or money loss.**
 
 Read every changed file. Check every item below. No skipping.
+
+### Pass 1: Normal Analysis
+Review the code as-is. Apply the full CRITICAL checklist below.
+For each finding, note your **confidence level (1-10)**.
+
+### Pass 2: Devil's Advocate
+Re-read the same code. Actively try to BREAK it:
+- "What if this input is null/empty/huge/negative/unicode?"
+- "What if this is called twice simultaneously?"
+- "What if the network fails halfway through?"
+- "What if the user is malicious, not just careless?"
+
+Any new finding from Pass 2 gets tagged `[ADVERSARIAL]`.
+
+### Pass 3: Fresh Eyes
+Pretend you've never seen this code. Read it top-to-bottom:
+- Does the data flow make sense to a newcomer?
+- Are there implicit assumptions that aren't documented?
+- Could a tired engineer at 3am misuse this function?
+
+Any new finding from Pass 3 gets tagged `[FRESH-EYES]`.
+
+### Confidence Gate
+After all 3 passes, review your findings:
+- **Confidence ≥ 8/10**: Include in report
+- **Confidence 5-7**: Include with caveat: "Verify — moderate confidence"
+- **Confidence < 5**: Suppress to appendix (do not clutter the report)
+
+### 3-Strike Escalation
+If 3 findings in a row turn out to be false positives after investigation → PAUSE.
+You may be reviewing in the wrong context. Re-read the scope and project conventions
+before continuing.
+
+### Rationalization Prevention
+- NEVER write "looks fine" — cite specific evidence it IS fine, or flag as unverified
+- NEVER write "probably handled elsewhere" — Grep for proof, or flag as unknown
+- If you catch yourself writing "should be OK" → that's a finding, not a conclusion
 
 ### SQL / Database Safety
 - [ ] No raw SQL with string interpolation (SQL injection)

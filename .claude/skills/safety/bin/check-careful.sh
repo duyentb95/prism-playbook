@@ -50,8 +50,37 @@ fi
 # --- Destructive pattern checks ---
 WARN=""
 
+# Protected branch push detection (main/master)
+if printf '%s' "$CMD" | grep -qE 'git\s+push\s+.*(main|master)\b' 2>/dev/null; then
+  WARN="Protected branch: pushing directly to main/master. Use a feature branch + PR instead."
+fi
+
+# Secrets in commit (pre-push safety)
+if [ -z "$WARN" ] && printf '%s' "$CMD" | grep -qE 'git\s+(push|add)\s' 2>/dev/null; then
+  # Check for staged sensitive files
+  STAGED_SECRETS=$(git diff --cached --name-only 2>/dev/null | grep -iE '\.(env|key|pem|p12|pfx|credentials)$|secret' || true)
+  if [ -n "$STAGED_SECRETS" ]; then
+    WARN="Secrets risk: sensitive files staged for commit: $STAGED_SECRETS"
+  fi
+fi
+
+# Large file detection (>10MB staged)
+if [ -z "$WARN" ] && printf '%s' "$CMD" | grep -qE 'git\s+(push|add)\s' 2>/dev/null; then
+  LARGE_FILES=$(git diff --cached --name-only 2>/dev/null | while read -r f; do
+    if [ -f "$f" ]; then
+      SIZE=$(wc -c < "$f" 2>/dev/null | tr -d ' ')
+      if [ "$SIZE" -gt 10485760 ] 2>/dev/null; then
+        echo "$f ($(( SIZE / 1048576 ))MB)"
+      fi
+    fi
+  done || true)
+  if [ -n "$LARGE_FILES" ]; then
+    WARN="Large file warning: files >10MB staged: $LARGE_FILES"
+  fi
+fi
+
 # rm -rf / rm -r / rm --recursive
-if printf '%s' "$CMD" | grep -qE 'rm\s+(-[a-zA-Z]*r|--recursive)' 2>/dev/null; then
+if [ -z "$WARN" ] && printf '%s' "$CMD" | grep -qE 'rm\s+(-[a-zA-Z]*r|--recursive)' 2>/dev/null; then
   WARN="Destructive: recursive delete (rm -r). This permanently removes files."
 fi
 

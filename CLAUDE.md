@@ -54,6 +54,8 @@ templates/             <- 6 CLAUDE.md templates for target projects
 .prism-template/       <- Template files for new project setup
 .claude/commands/      <- 31 slash commands
 .claude/skills/        <- 7 internalized execution skills
+.claude/rules/         <- 9 rules (anti-hallucination, hero-mode, eng-methodology, progressive-disclosure, reuse-first, epic-classification, ux-psychology, refactoring-tiers, workflow-patterns)
+.claude/hooks/         <- 3 hooks (session-recovery, self-review, track-changes+security)
 .claude/settings.json  <- Claude Code settings
 archive/               <- Deprecated files (setup-v2)
 ```
@@ -63,6 +65,10 @@ archive/               <- Deprecated files (setup-v2)
 Sub-agents end with one of: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT.
 Task briefs go in .prism/tasks/TASK_NNN_xxx.md.
 Run: `Read .prism/tasks/TASK_NNN_xxx.md and EXECUTE. Assume I am AFK.`
+
+### Hero Mode (parallel agents)
+Multiple agents on one branch with strict file ownership lanes.
+See `.claude/rules/hero-mode.md` for protocol. Use `.prism/CLAIMS.md` for shared files.
 
 ## Token Optimization
 

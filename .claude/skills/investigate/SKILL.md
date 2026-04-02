@@ -24,23 +24,44 @@ Fixing symptoms creates whack-a-mole debugging. Every fix that doesn't address r
 
 ---
 
-## Phase 1: Root Cause Investigation
+## Phase 1: Reproduce
 
-Gather context before forming any hypothesis.
+Before anything else: can you trigger the bug?
 
 1. **Collect symptoms:** Read the error messages, stack traces, and reproduction steps. If the user hasn't provided enough context, ask ONE question at a time via AskUserQuestion.
 
-2. **Read the code:** Trace the code path from the symptom back to potential causes. Use Grep to find all references, Read to understand the logic.
+2. **Reproduce deterministically:** Run the failing scenario. If it fails intermittently, run it 3-5 times to establish the pattern.
 
-3. **Check recent changes:**
+3. **If you cannot reproduce:** Gather more evidence (logs, env differences, timing). Do NOT proceed to hypothesize without reproduction or a clear theory for why it's intermittent.
+
+Output: **"Reproduction: [deterministic / intermittent / cannot reproduce]"**
+
+---
+
+## Phase 2: Comprehend (CRITICAL — do not skip)
+
+**NEVER guess without reading code. NEVER propose a fix without tracing the call tree.**
+
+1. **Identify the entry point** — where does execution start for this bug's code path?
+
+2. **Read the ENTIRE function** — not just the line that errors. Understand what it's supposed to do.
+
+3. **List ALL called functions** — trace one level deep. For each:
+   - What does it return?
+   - Can it throw? What happens if it does?
+   - Does it have side effects?
+
+4. **Trace data flow:** Where does the problematic value come from? Follow it backwards through assignments, function params, DB queries, API responses.
+
+5. **Identify shared state / side effects:** Is anything being mutated that other code depends on? Race condition? Stale cache?
+
+6. **Check recent changes:**
    ```bash
    git log --oneline -20 -- <affected-files>
    ```
    Was this working before? What changed? A regression means the root cause is in the diff.
 
-4. **Reproduce:** Can you trigger the bug deterministically? If not, gather more evidence before proceeding.
-
-Output: **"Root cause hypothesis: ..."** — a specific, testable claim about what is wrong and why.
+Output: **"Comprehension map:"** — entry point → call chain → data flow → suspect area
 
 ---
 
@@ -63,13 +84,40 @@ Also check:
 
 ---
 
-## Phase 3: Hypothesis Testing
+## Phase 3: Hypothesize
 
-Before writing ANY fix, verify your hypothesis.
+Generate **minimum 3 hypotheses**, ranked by probability.
 
-1. **Confirm the hypothesis:** Add a temporary log statement, assertion, or debug output at the suspected root cause. Run the reproduction. Does the evidence match?
+For each hypothesis:
+- **Claim:** What exactly is wrong?
+- **Evidence for:** What supports this?
+- **Evidence against:** What doesn't fit?
+- **Probability:** High / Medium / Low
 
-2. **If the hypothesis is wrong:** Return to Phase 1. Gather more evidence. Do not guess.
+Start with the highest-probability hypothesis.
+
+---
+
+## Phase 3.5: Design Test
+
+Before writing ANY fix, **design a test that proves or disproves your hypothesis.**
+
+1. **What to test:** A specific, minimal assertion that distinguishes "hypothesis correct" from "hypothesis wrong."
+
+2. **How to test:** Add a temporary log, assertion, debug output, or write a focused test case at the suspected root cause.
+
+3. **Expected result if hypothesis is correct:** [describe]
+4. **Expected result if hypothesis is wrong:** [describe]
+
+Run the test. Record the actual result.
+
+---
+
+## Phase 4: Test & Iterate
+
+1. **Confirm the hypothesis:** Run the designed test. Does the evidence match?
+
+2. **If the hypothesis is wrong:** Return to Phase 2 (Comprehend). Gather more evidence. Do not guess.
 
 3. **3-strike rule:** If 3 hypotheses fail, **STOP**. Use AskUserQuestion:
    ```
@@ -88,7 +136,7 @@ Before writing ANY fix, verify your hypothesis.
 
 ---
 
-## Phase 4: Implementation
+## Phase 5: Implementation
 
 Once root cause is confirmed:
 
@@ -112,7 +160,7 @@ Once root cause is confirmed:
 
 ---
 
-## Phase 5: Verification & Report
+## Phase 6: Verification & Report
 
 **Fresh verification:** Reproduce the original bug scenario and confirm it's fixed. This is not optional.
 

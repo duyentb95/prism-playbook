@@ -242,11 +242,57 @@ Merge Red Team findings into the list before Step 5.
 
 ---
 
+## Step 4.9: Self-Regulation Metrics
+
+### Health Score (Code Quality Gate)
+
+Calculate a Health Score for the PR based on findings so far:
+
+```
+Base: 100 points
+Deductions:
+  CRITICAL finding:       -25 each
+  INFORMATIONAL finding:  -5 each
+  Scope drift detected:   -10
+  Missing requirements:   -15 each
+
+Weighted categories (when applicable):
+  Security issues:     x1.5 multiplier on deduction
+  Data safety issues:  x1.5 multiplier on deduction
+```
+
+**Output:**
+```
+Health Score: XX/100
+[CRITICAL: N × -25 = -N] [INFORMATIONAL: N × -5 = -N] [Adjustments: ...]
+```
+
+**Gate:** Health Score < 50 → flag as HIGH RISK in review output (does not block, but prominently warned).
+
+### WTF-Likelihood (Self-Regulation)
+
+Track fix quality during the Fix-First phase. Starts at **0%**.
+
+| Event | Adjustment |
+|-------|------------|
+| User rejects a fix (says "no", "skip", "revert") | +15% |
+| Fix touches >3 files | +5% |
+| Fix touches files NOT in the original diff | +20% |
+| User accepts fix without comment | -5% (min 0%) |
+
+**Thresholds:**
+- **≥ 25%:** PAUSE. Use AskUserQuestion: "My fix accuracy is dropping (WTF-Likelihood: N%). Should I continue fixing, or would you prefer to handle the remaining items manually?"
+- **≥ 40%:** STOP all auto-fixes. Present remaining issues as report only. Do not attempt further fixes.
+
+**Track inline:** After each fix attempt, update the running score silently. Only surface to user when threshold is hit.
+
+---
+
 ## Step 5: Fix-First Review
 
 **Every finding gets action — not just critical ones.**
 
-Output a summary header: `Pre-Landing Review: N issues (X critical, Y informational)`
+Output a summary header: `Pre-Landing Review: N issues (X critical, Y informational) | Health Score: XX/100`
 
 ### Step 5a: Classify each finding
 

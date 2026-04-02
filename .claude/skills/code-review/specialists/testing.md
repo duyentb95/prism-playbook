@@ -7,6 +7,28 @@ If no findings: output `NO FINDINGS` and nothing else.
 
 ---
 
+## F.I.R.S.T. Principle
+
+Every test should be:
+- **Fast** — milliseconds, not seconds. Slow tests get skipped.
+- **Independent** — no shared mutable state, no order dependency.
+- **Repeatable** — same result every time, any environment.
+- **Self-validating** — pass/fail, no manual inspection needed.
+- **Timely** — written with or before the code, not weeks later.
+
+Flag tests that violate F.I.R.S.T. as INFORMATIONAL with `"category":"testing-first"`.
+
+## Coverage Targets
+
+| Area | Minimum | Ideal |
+|------|---------|-------|
+| General code | 80% | 90%+ |
+| Critical paths (auth, payments, data) | 100% | 100% |
+| Utility functions | 90% | 100% |
+| Error handling branches | 80% | 90% |
+
+---
+
 ## Categories
 
 ### Missing Negative-Path Tests
