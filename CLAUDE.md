@@ -54,7 +54,7 @@ templates/             <- 6 CLAUDE.md templates for target projects
 .prism-template/       <- Template files for new project setup
 .claude/commands/      <- 31 slash commands
 .claude/skills/        <- 7 internalized execution skills
-.claude/rules/         <- 9 rules (anti-hallucination, hero-mode, eng-methodology, progressive-disclosure, reuse-first, epic-classification, ux-psychology, refactoring-tiers, workflow-patterns)
+.claude/rules/         <- 10 rules (anti-hallucination, hero-mode, eng-methodology, progressive-disclosure, reuse-first, epic-classification, ux-psychology, refactoring-tiers, workflow-patterns, operational-edges)
 .claude/hooks/         <- 3 hooks (session-recovery, self-review, track-changes+security)
 .claude/settings.json  <- Claude Code settings
 archive/               <- Deprecated files (setup-v2)
