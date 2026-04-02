@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Track Changes + Security Scanner Hook
 # Runs on PostToolUse for Edit/Write operations
-# 1. Logs modified files to .prism/session-changes.log (audit trail)
+# 1. Logs modified files to .prism/session-changes.jsonl (JSONL audit trail)
 # 2. Scans written content for hardcoded secrets (security)
 
 set -euo pipefail
@@ -36,8 +36,8 @@ esac
 # Ensure .prism directory exists
 mkdir -p .prism
 
-# --- Part 1: Audit Trail ---
-TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+# --- Part 1: Audit Trail (JSONL) ---
+TIMESTAMP=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
 TOOL_NAME=$(echo "$INPUT" | python3 -c "
 import sys, json
 try:
@@ -47,7 +47,8 @@ except:
     print('unknown')
 " 2>/dev/null || echo "unknown")
 
-echo "$TIMESTAMP | $TOOL_NAME | $FILE_PATH" >> .prism/session-changes.log
+# JSONL format — one JSON object per line, AI-parseable
+printf '{"ts":"%s","tool":"%s","file":"%s"}\n' "$TIMESTAMP" "$TOOL_NAME" "$FILE_PATH" >> .prism/session-changes.jsonl
 
 # --- Part 2: Security Scanner ---
 # Skip scanning for .md files (docs, not code)
@@ -99,6 +100,7 @@ if [ -n "$SECRETS_FOUND" ]; then
   echo "Otherwise, move secrets to environment variables or .env files."
   echo "================================================================"
   echo ""
-  # Log to security audit
-  echo "$TIMESTAMP | SECURITY_WARNING | $FILE_PATH |$SECRETS_FOUND" >> .prism/session-changes.log
+  # Log to security audit (JSONL)
+  SECRETS_CLEAN=$(printf "$SECRETS_FOUND" | tr '\n' '; ' | sed 's/^  - //;s/;  - /; /g')
+  printf '{"ts":"%s","tool":"%s","file":"%s","type":"security_warning","details":"%s"}\n' "$TIMESTAMP" "$TOOL_NAME" "$FILE_PATH" "$SECRETS_CLEAN" >> .prism/session-changes.jsonl
 fi
