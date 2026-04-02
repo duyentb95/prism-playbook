@@ -49,6 +49,20 @@
 - **Reasoning**: Design quality is critical for web projects. Having a PRISM-native option means the audit works even without gstack installed. gstack delegation still available for browser-based visual testing.
 - **Consequences**: New skill added to framework. Setup script updated to include in status/uninstall. Total skills: 11.
 
+## 2026-04-02 — PRISM v4: Cross-pollinate from agstack + claude-hlq + claude-howto
+- **Context**: Three external repos had best practices PRISM lacked: anti-hallucination, hero mode, adversarial review, session recovery, security scanning, etc.
+- **Decision**: Adopt 32 patterns across 10 rules, 3 hooks, 9 skill upgrades, 4 template upgrades
+- **Alternatives**: Build from scratch (slow, reinventing), fork one repo (misses others), cherry-pick selectively (incomplete)
+- **Reasoning**: Cross-pollination gets best of all three. Merge-not-replace preserves existing project customizations.
+- **Consequences**: PRISM baseline now: 10 rules + 3 hooks + 9 core .claude/skills. All target projects need upgrade via additive copy + surgical merge.
+
+## 2026-04-02 — JSONL for AI-consumed audit trail (not plain text)
+- **Context**: track-changes.sh originally output plain text (`timestamp | tool | file`). AI needed to parse this for session recovery and security audit.
+- **Decision**: Switch to JSONL format (`{"ts":"...","tool":"...","file":"..."}`)
+- **Alternatives**: Plain text (human-readable but hard to parse), SQLite (over-engineering), CSV (no nested fields)
+- **Reasoning**: JSONL is append-only, one object per line, AI parses with `json.loads(line)`. Human-readable with `jq`. Same pattern as gstack learnings.jsonl.
+- **Consequences**: `.prism/session-changes.jsonl` replaces `.prism/session-changes.log`. Security warnings inline as `"type":"security_warning"` field.
+
 ## 2026-03-17 — Browser-agent with dual-engine fallback (not gstack-only)
 - **Context**: gstack browse binary requires Bun + build step. Many users won't have it. Browser testing was gstack-only.
 - **Decision**: Create PRISM-native browser-agent skill with 3-tier engine detection: gstack browse → Playwright CLI → script generation.

@@ -22,3 +22,14 @@
 - **Zero runtime dependencies for core** — only bash + markdown
 - **gstack is vendored, not forked** — update via submodule
 - **Skills work both globally and vendored** — discover via project root first, then ~/.claude/
+
+## Data Format Rules
+- **JSONL for AI-consumed data** — learnings, session logs, action history, audit trails. One JSON object per line, append-only, AI parses with `json.loads(line)` — Source: agstack + gstack pattern analysis (2026-04-02)
+- **Markdown for human-consumed data** — CLAUDE.md, MASTER_PLAN, CONTEXT_HUB, knowledge files, gate status. Readable in IDE/GitHub, human-editable — Source: PRISM convention
+- **Dual output for reports** — Markdown for humans + JSON for trend analysis/CI gates — Source: TECH_DECISIONS (2026-03-17)
+
+## Cross-Project Upgrade Rules
+- **Merge, not replace** — When upgrading PRISM across projects, merge new content into existing files. Never overwrite project-specific customizations — Source: bot/data upgrade session (2026-04-02)
+- **Additive for rules/hooks** — New rules and hooks are always safe to copy (no conflict risk). Keep project-specific rules intact — Source: bot/data upgrade session (2026-04-02)
+- **Diff before overwriting skills** — Compare file sizes first. If target is LARGER, it has project customizations — skip or surgical merge only — Source: bot/data upgrade session (2026-04-02)
+- **Rename on conflict, don't merge** — If a PRISM command name conflicts with a business command, rename the business one (e.g., `/investigate` → `/investigate-wallet`) — Source: bot/data naming conflict (2026-04-02)

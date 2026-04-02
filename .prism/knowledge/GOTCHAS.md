@@ -17,3 +17,24 @@
 - **Root cause**: Original skills were written before studying gstack patterns
 - **Fix**: Added AskUserQuestion Format section to all 5 skills (Re-ground → Simplify → Recommend → Options)
 - **Prevention**: Always check gstack SKILL.md as reference when writing new skills
+
+## 2026-04-02 — /investigate naming conflict between PRISM and business command
+- **Problem**: bot/data project used `/investigate` for wallet insider trading analysis. PRISM uses `/investigate` for systematic debugging (RCHDTV). Both needed but same name.
+- **Root cause**: Business commands created before PRISM had a debugging skill with the same name
+- **Fix**: Renamed business command to `/investigate-wallet`, freed `/investigate` for PRISM debugging
+- **Prevention**: When adding business-specific commands, avoid PRISM reserved names: investigate, review, ship, plan, compact, status, gsd, adhoc, deploy, cost, pipeline
+- **Severity**: 🟡 Medium
+
+## 2026-04-02 — Claude Code Read tool silently truncates at 2000 lines
+- **Problem**: Reading a large file returns only first 2000 lines without warning. Edits based on partial reads can break code at unseen lines.
+- **Root cause**: Read tool has hardcoded 2000-line limit per call
+- **Fix**: Check `wc -l` before reading large files. Use offset+limit for chunked reads. Use Grep to find target lines first.
+- **Prevention**: Added to `.claude/rules/operational-edges.md` as mandatory practice
+- **Severity**: 🔴 Critical
+
+## 2026-04-02 — Search results silently truncated, grep misses dynamic references
+- **Problem**: Grep results are capped. Single grep for rename misses dynamic imports, string references, re-exports. Leads to broken references after refactoring.
+- **Root cause**: Search result truncation + grep is literal pattern matching, doesn't understand code semantics
+- **Fix**: Multi-pass search protocol: ≥3 patterns per rename (exact, string ref, dynamic import, re-export). If results seem incomplete, narrow scope by directory.
+- **Prevention**: Added to `.claude/rules/operational-edges.md`
+- **Severity**: 🔴 Critical
