@@ -87,6 +87,52 @@ Each agent gets its own ~167K token context window. One agent doing 20 tasks was
 | Complex task, many dependencies | Sub-agent with task brief |
 | Long conversation (>30 messages) | /compact or spawn fresh agent |
 
+## 6. Pre-Compact State Preservation
+
+Before context gets compacted (manually via /compact or automatically by the system):
+
+1. **Summarize progress** — what was accomplished, what remains
+2. **Extract learnings** — patterns, gotchas, decisions made during this session
+3. **List tested approaches** — what was tried, what worked, what didn't (prevent re-exploring dead ends)
+4. **Identify remaining work** — next concrete steps, not vague "continue working"
+5. **Save to `.prism/STAGING.md`** — not just conversation memory
+
+This bridges the gap between sessions. Without it, the next session starts from scratch.
+
+## 7. Stall Detection — Catch infinite loops
+
+Autonomous loops (sub-agents, fix-review cycles) can stall. Detect and intervene:
+
+**Stall signals:**
+- No progress across 2 consecutive checkpoints
+- Repeated failures with **identical stack traces** (loop, not new errors)
+- Budget/time drift (>3x expected duration)
+- Same file edited >5 times without test pass
+
+**Intervention protocol:**
+1. **PAUSE** — stop the current approach
+2. **REDUCE SCOPE** — try a simpler version of the fix
+3. **VERIFY** — run tests on what you have
+4. **ESCALATE** — if still stuck, AskUserQuestion with what was tried
+
+**Rule:** 3 identical failures = architecture problem, not implementation problem. Stop fixing symptoms.
+
+## 8. Deterministic Logic Separation
+
+LLMs forget instructions ~20% of the time. For operations requiring 100% accuracy, **push logic into scripts**:
+
+| Task | BAD (prompt-based) | GOOD (script-based) |
+|------|-------------------|---------------------|
+| Date/time calculation | "Calculate next Friday" | `date -d "next friday"` |
+| Version comparison | "Is 2.1.0 > 2.0.9?" | `sort -V` or semver script |
+| File counting | "Count all .ts files" | `find . -name "*.ts" \| wc -l` |
+| Math operations | "What's 15% of 847?" | `echo "847 * 0.15" \| bc` |
+| JSON extraction | "Get the name field" | `jq '.name' file.json` |
+
+**Principle:** If it can be a Bash command, make it a Bash command. Don't trust the LLM to compute — trust it to decide WHAT to compute, then use tools to compute it.
+
+---
+
 ## Summary Checklist
 
 Before marking ANY task done:
