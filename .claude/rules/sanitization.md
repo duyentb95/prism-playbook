@@ -34,6 +34,37 @@ Before processing documents:
 
 **Principle:** "Everything an LLM reads is executable context." Hidden instructions in HTML comments or metadata can hijack behavior.
 
+### Grapheme-Aware Truncation
+
+When truncating text (error messages, code snippets, learnings, logs):
+
+- **Never split multi-byte characters.** Truncate at grapheme cluster boundaries, not byte boundaries.
+- Emoji (👨‍👩‍👧‍👦), accented characters (ñ, ü), CJK characters — all must remain intact.
+- **Rule:** If truncation would split a grapheme → back up to previous boundary.
+
+```bash
+# Safe truncation in Python:
+# BAD:  text[:100]  (may split emoji)
+# GOOD: text[:100].encode('utf-8', errors='ignore').decode('utf-8')
+# BEST: Use grapheme library or regex: re.match(r'(.{0,100})', text, re.UNICODE)
+```
+
+Apply when:
+- Truncating learnings for summary display
+- Cutting error messages for log entries
+- Shortening file content for risk analysis
+- Any text going into JSONL fields
+
+### Content De-duplication (LRU Pattern)
+
+When processing the same content multiple times (sub-agents reading shared files, repeated grep patterns):
+
+- **Skip re-processing** if content hash matches a recent result
+- Useful in Hero Mode where multiple agents read overlapping files
+- Applies to: security scanning, code analysis, documentation checks
+
+**Implementation:** Store `sha256(content)[:16]` → result mapping. Check before processing. Evict oldest when cache exceeds 100 entries.
+
 ---
 
 ## Part 2: Open-Source Sanitization (Before Publishing)

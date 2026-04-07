@@ -62,6 +62,30 @@ Risk = max(Base, Sensitivity) + Blast + Irreversibility
 | 7-9 | **CONFIRM** — AskUserQuestion before proceeding |
 | 10+ | **BLOCK** — refuse without explicit user override |
 
+## Hybrid Assessment — Fallback Chain
+
+Don't compute full risk scores for everything. Use pattern-first with fallback:
+
+```
+1. PATTERN MATCH (instant)
+   Known risky patterns → immediate score
+   e.g., "rm -rf" = 10, ".env write" = 8, "auth file edit" = 7
+
+2. HISTORICAL MATCH (fast)
+   Check .prism/knowledge/GOTCHAS.md — has this pattern burned us before?
+   If match → boost score by +2, cite the gotcha
+
+3. HEURISTIC SCORE (standard)
+   Compute 4-dimension score (base × sensitivity × blast × irreversibility)
+   This is the default path for novel situations
+
+4. CONTEXTUAL FALLBACK (slow)
+   If heuristic score is 4-6 (ambiguous zone) — read surrounding code for context
+   e.g., "DELETE without WHERE" in a migration file = 3 (intentional), in app code = 9 (bug)
+```
+
+**Rule:** Most operations hit step 1 or 3. Steps 2 and 4 only fire for edge cases. Don't over-analyze low-risk operations.
+
 ## When to Apply
 
 - Before refactoring that touches >5 files
