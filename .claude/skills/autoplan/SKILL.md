@@ -1,7 +1,7 @@
 ---
 name: autoplan
 description: "Auto-review pipeline — runs CEO → eng review sequentially with auto-decisions using 6 decision principles. Surfaces only taste decisions at a final approval gate. One command, fully reviewed plan out. Use when asked to autoplan, auto review, run all reviews, or make the decisions for me."
-model: opus
+model: sonnet
 tools: ["Bash", "Read", "Write", "Edit", "Glob", "Grep", "AskUserQuestion"]
 ---
 

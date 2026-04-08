@@ -16,7 +16,7 @@ allowed-tools:
   - Glob
   - Grep
   - AskUserQuestion
-model: opus
+model: sonnet
 ---
 
 ## Preamble (run first)
